@@ -29,7 +29,7 @@ st.markdown("""
         font-family: 'Consolas', monospace;
     }
     </style>
-    """, unsafe_allow_index=True)
+    """, unsafe_allow_html=True)
 
 st.title("🏔️ Géo-Analyste Pro")
 st.subheader("Analyse de Terrain - Version Mobile")
@@ -77,30 +77,29 @@ if file:
 
                 # Interpolation PCHIP (Standard Géologique)
                 x_grid = np.linspace(x_km.min(), x_km.max(), 600)
-                y_smooth = PchipInterpolator(x_km, y_m)(x_grid)
+                interp_func = PchipInterpolator(x_km, y_m)
+                y_smooth = interp_func(x_grid)
 
                 # Création du Graphique
                 fig, ax = plt.subplots(figsize=(10, 6))
                 ax.plot(x_grid, y_smooth, color='#4E342E', linewidth=3, label="Topographie")
                 ax.fill_between(x_grid, y_smooth, color='#8D6E63', alpha=0.3)
 
-                # --- OPTIMISATION SCIENTIFIQUE (AXE Y) ---
-                # On commence 25m sous le point le plus bas (Science Mode)
+                # OPTIMISATION SCIENTIFIQUE (AXE Y)
                 ax.set_ylim(min(y_m) - 25, max(y_m) + 50)
 
-                # Habillage du graphique
+                # Habillage
                 ax.set_xlabel("Distance cumulée (km)", fontweight='bold')
                 ax.set_ylabel("Altitude (m)", fontweight='bold')
                 ax.set_title(f"Coupe Topographique (1/{echelle})", fontsize=14)
                 ax.grid(True, linestyle=':', alpha=0.6)
                 ax.legend()
 
-                # Affichage
                 st.pyplot(fig)
                 st.success("✅ Analyse terminée avec succès !")
 
-        except ValueError:
-            st.error("❌ Erreur de format : Utilisez uniquement des chiffres et des virgules.")
+        except Exception as e:
+            st.error(f"❌ Erreur : {e}")
 
 st.divider()
 st.caption("Géo-Analyste Pro v18.5 | Optimisé pour le terrain")
